@@ -142,6 +142,12 @@ public class PvEActivity extends AppCompatActivity {
                     while (!isTime && !isTrue) {
                         if (end - start < 10000) {
                             if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(getWord.getEnglish())) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(PvEActivity.this,"ture",Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                                 isTrue = true;
                                 id.add(String.valueOf(getWord.getId()));
                                 state.add("1");
