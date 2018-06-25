@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">万词王 重置版(Alpha)</string>
+    <string name="url_login">http://threr.cn:8080/wanciwang/login</string>
+    <string name="url_register">http://threr.cn:8080/wanciwang/register</string>
+    <string name="url_getWord">http://threr.cn:8080/wanciwang/getSomeWord</string>
+    <string name="url_updateResult">http://localhost:8080/wanciwang/updateResult</string>
+
+    <string name="error_0">服务器发生错误，请与管理员联系</string>
+</resources>
