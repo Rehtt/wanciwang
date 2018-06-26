@@ -9,6 +9,16 @@ public class Data {
      */
     public static int PvEGrade;
 
+    public static boolean LoadDone;
+
+    public static boolean isLoadDone() {
+        return LoadDone;
+    }
+
+    public static void setLoadDone(boolean loadDone) {
+        LoadDone = loadDone;
+    }
+
     public static int getPvEGrade() {
         return PvEGrade;
     }

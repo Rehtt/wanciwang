@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.rehtt.test.wanciRemake.Activity.PvEActivity;
+import com.rehtt.test.wanciRemake.Activity.WrongWordActivity;
 import com.rehtt.test.wanciRemake.DialogActivity.LoginDialog;
 import com.rehtt.test.wanciRemake.DialogActivity.PvEDialog;
 import com.rehtt.test.wanciRemake.DialogActivity.register;
@@ -80,21 +81,20 @@ public class MainActivity extends AppCompatActivity {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             float x = event.getX();
             float y = event.getY();
-            if (x >= dip.px(523) && x < dip.px(650)){
-                if (y>=dip.px(50)&&y<dip.px(95)){
+            if (x >= dip.px(523) && x < dip.px(650)) {
+                if (y >= dip.px(50) && y < dip.px(95)) {
                     new PvEDialog(MainActivity.this).show();
-                }else if (y>=dip.px(107)&&y<dip.px(152)){
+                } else if (y >= dip.px(107) && y < dip.px(152)) {
                     new Data().setPvEGrade(0);
                     startActivity(new Intent().setClass(MainActivity.this, PvEActivity.class));
-                }else if (y>=dip.px(168)&&y<dip.px(209)){
+                } else if (y >= dip.px(168) && y < dip.px(209)) {
+                    startActivity(new Intent().setClass(MainActivity.this, WrongWordActivity.class));
+                } else if (y >= dip.px(224) && y < dip.px(270)) {
 
-                }else if (y>=dip.px(224)&&y<dip.px(270)){
-
-                }else if (y>=dip.px(289)&&y<dip.px(325)){
+                } else if (y >= dip.px(289) && y < dip.px(325)) {
 
                 }
             }
-
 
 
         }
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // 此处为android 6.0以上动态授权的回调，用户自行实现。

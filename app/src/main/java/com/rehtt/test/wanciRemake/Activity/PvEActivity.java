@@ -1,8 +1,10 @@
 package com.rehtt.test.wanciRemake.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.rehtt.test.wanciRemake.DialogActivity.LoadDialog;
 import com.rehtt.test.wanciRemake.R;
 import com.rehtt.test.wanciRemake.Tools.Data;
 import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
@@ -73,6 +76,12 @@ public class PvEActivity extends AppCompatActivity {
         SpeechUtility.createUtility(this, SpeechConstant.APPID + "=59e45c55");
 
         getWord();
+
+        //显示加载框
+        LoadDialog loadDialog=new LoadDialog(PvEActivity.this);
+        loadDialog.setCanceledOnTouchOutside(false);
+        loadDialog.show();
+
     }
 
     private void getWord() {
@@ -282,6 +291,7 @@ public class PvEActivity extends AppCompatActivity {
             switch (msg.getData().getString("show")) {
                 case "showEnglish":
                     showWord.setText(msg.getData().getString("English"));
+                    loadDone();
                     break;
                 case "Time":
                     showTime.setText(msg.getData().getString("Time"));
@@ -295,6 +305,14 @@ public class PvEActivity extends AppCompatActivity {
 
         }
     };
+
+    //加载完成
+    public void loadDone() {
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(PvEActivity.this);
+        Intent intent = new Intent("LoadDone");
+        localBroadcastManager.sendBroadcast(intent);
+    }
+
 
 
     class GetWord {
