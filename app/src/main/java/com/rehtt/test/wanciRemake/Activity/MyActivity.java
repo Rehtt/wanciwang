@@ -112,6 +112,19 @@ public class MyActivity extends AppCompatActivity {
 
     public void Vocabulary(View view) {
         showAn("Vocabulary");
+        showLocalK();
+        new Vocabulary().getAll(getString(R.string.url_getAll), new Vocabulary.CallBack() {
+            @Override
+            public void putList(ArrayList list) {
+                Bundle bundle = new Bundle();
+                Message message = new Message();
+                bundle.putString("show", "Vocabulary");
+                bundle.putStringArrayList("Vocabulary", list);
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }
+        });
+
     }
 
     public void PersonalRanking(View view) {
@@ -121,7 +134,7 @@ public class MyActivity extends AppCompatActivity {
     public void WrongWord(View view) {
         showAn("WrongWord");
         showLocalK();
-        new WrongWord().getError(getString(R.string.url_wrongwrod), new WrongWord.list() {
+        new WrongWord().getError(getString(R.string.url_wrongwrod), new WrongWord.CallBack() {
             @Override
             public void putList(ArrayList arrayList) {
 
@@ -144,13 +157,18 @@ public class MyActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.getData().getString("show")) {
                 case "WrongWord":
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("WrongWord"));
-                    listView.setAdapter(arrayAdapter);
-                    closeLocalK();
+                    ArrayAdapter WrongWord = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("WrongWord"));
+                    listView.setAdapter(WrongWord);
+                    break;
+                case "Vocabulary":
+                    ArrayAdapter Vocabulary = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("Vocabulary"));
+                    listView.setAdapter(Vocabulary);
                     break;
                 default:
                     break;
+
             }
+            closeLocalK();
         }
     };
 

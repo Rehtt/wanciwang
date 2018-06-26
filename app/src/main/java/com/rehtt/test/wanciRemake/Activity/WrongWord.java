@@ -1,11 +1,5 @@
 package com.rehtt.test.wanciRemake.Activity;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Message;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
 import com.google.gson.Gson;
 import com.rehtt.test.wanciRemake.R;
 import com.rehtt.test.wanciRemake.Tools.Data;
@@ -16,8 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -28,7 +20,7 @@ public class WrongWord {
 
     ArrayList list = new ArrayList();
 
-    public void getError(String url, final list listt) {
+    public void getError(String url, final CallBack listt) {
         Map<String, String> map = new HashMap<>();
         map.put("userName", new Data().getUser());
         OkhttpNet.doPost(url, map, new Callback() {
@@ -62,10 +54,9 @@ public class WrongWord {
     }
 
 
-    public interface list{
+    public interface CallBack {
         void putList(ArrayList arrayList);
     }
-
 
 
     private class WrongWordJ {
