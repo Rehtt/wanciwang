@@ -145,7 +145,7 @@ public class PvEActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(PvEActivity.this,"ture",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(PvEActivity.this,"true",Toast.LENGTH_SHORT).show();
                                     }
                                 });
                                 isTrue = true;
