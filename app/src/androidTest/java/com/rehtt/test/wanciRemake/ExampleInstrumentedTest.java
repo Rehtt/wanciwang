@@ -25,11 +25,8 @@ public class ExampleInstrumentedTest {
 //
 //        assertEquals("com.rehtt.test.wanciRemake", appContext.getPackageName());
 
-
     }
 
-    public void net(){
 
-    }
 
 }

@@ -44,7 +44,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.PvEActivity" />
-        <activity android:name=".Activity.WrongWordActivity"></activity>
+        <activity android:name=".Activity.WrongWordActivity" />
+        <activity android:name=".Activity.MyActivity"></activity>
     </application>
 
 </manifest>

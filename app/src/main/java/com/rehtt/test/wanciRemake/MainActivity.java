@@ -22,8 +22,8 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.rehtt.test.wanciRemake.Activity.MyActivity;
 import com.rehtt.test.wanciRemake.Activity.PvEActivity;
-import com.rehtt.test.wanciRemake.Activity.WrongWordActivity;
 import com.rehtt.test.wanciRemake.DialogActivity.LoginDialog;
 import com.rehtt.test.wanciRemake.DialogActivity.PvEDialog;
 import com.rehtt.test.wanciRemake.DialogActivity.register;
@@ -81,17 +81,18 @@ public class MainActivity extends AppCompatActivity {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             float x = event.getX();
             float y = event.getY();
-            if (x >= dip.px(523) && x < dip.px(650)) {
-                if (y >= dip.px(50) && y < dip.px(95)) {
+//            Log.e("qwe",dip.dp(x)+"||"+dip.dp(y));
+            if (x >= dip.px(440) && x < dip.px(555)) {
+                if (y >= dip.px(54) && y < dip.px(86)) {
                     new PvEDialog(MainActivity.this).show();
-                } else if (y >= dip.px(107) && y < dip.px(152)) {
+                } else if (y >= dip.px(105) && y < dip.px(147)) {
                     new Data().setPvEGrade(0);
                     startActivity(new Intent().setClass(MainActivity.this, PvEActivity.class));
-                } else if (y >= dip.px(168) && y < dip.px(209)) {
-                    startActivity(new Intent().setClass(MainActivity.this, WrongWordActivity.class));
-                } else if (y >= dip.px(224) && y < dip.px(270)) {
+                } else if (y >= dip.px(165) && y < dip.px(201)) {
+                    startActivity(new Intent().setClass(MainActivity.this, MyActivity.class));
+                } else if (y >= dip.px(221) && y < dip.px(258)) {
 
-                } else if (y >= dip.px(289) && y < dip.px(325)) {
+                } else if (y >= dip.px(273) && y < dip.px(313)) {
 
                 }
             }

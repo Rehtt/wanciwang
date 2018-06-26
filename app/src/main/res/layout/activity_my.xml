@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.MyActivity">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/main2_background" />
+
+    <TextView
+        android:id="@+id/TextView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:onClick="More"
+        android:text="更多"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/TextView4"
+        app:layout_constraintStart_toStartOf="@+id/TextView4"
+        app:layout_constraintTop_toBottomOf="@+id/TextView4" />
+
+    <TextView
+        android:id="@+id/TextView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:onClick="Vocabulary"
+        android:text="词汇量"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/TextView3"
+        app:layout_constraintStart_toStartOf="@+id/TextView3"
+        app:layout_constraintTop_toBottomOf="@+id/TextView3" />
+
+    <TextView
+        android:id="@+id/TextView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:onClick="PersonalRanking"
+        android:text="个人榜"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/TextView2"
+        app:layout_constraintStart_toStartOf="@+id/TextView2"
+        app:layout_constraintTop_toBottomOf="@+id/TextView2" />
+
+    <TextView
+        android:id="@+id/TextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:onClick="WrongWord"
+        android:text="错词库"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@+id/TextView1"
+        app:layout_constraintStart_toStartOf="@+id/TextView1"
+        app:layout_constraintTop_toBottomOf="@+id/TextView1" />
+
+    <TextView
+        android:id="@+id/TextView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:onClick="MyInfo"
+        android:text="个人信息"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.159"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/ListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="73dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TextView1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/MyInfo"
+        android:layout_width="176dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="@+id/TextView1"
+        app:layout_constraintStart_toStartOf="@+id/TextView1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/kuang" />
+
+    <ImageView
+        android:id="@+id/More"
+        android:layout_width="176dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/TextView5"
+        app:layout_constraintEnd_toEndOf="@+id/TextView5"
+        app:layout_constraintStart_toStartOf="@+id/TextView5"
+        app:layout_constraintTop_toTopOf="@+id/TextView5"
+        app:srcCompat="@drawable/kuang" />
+
+    <ImageView
+        android:id="@+id/Vocabulary"
+        android:layout_width="176dp"
+        android:layout_height="39dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/TextView4"
+        app:layout_constraintEnd_toEndOf="@+id/TextView4"
+        app:layout_constraintStart_toStartOf="@+id/TextView4"
+        app:layout_constraintTop_toTopOf="@+id/TextView4"
+        app:srcCompat="@drawable/kuang" />
+
+    <ImageView
+        android:id="@+id/WrongWord"
+        android:layout_width="176dp"
+        android:layout_height="39dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/TextView2"
+        app:layout_constraintEnd_toEndOf="@+id/TextView2"
+        app:layout_constraintStart_toStartOf="@+id/TextView2"
+        app:layout_constraintTop_toTopOf="@+id/TextView2"
+        app:srcCompat="@drawable/kuang" />
+
+    <ImageView
+        android:id="@+id/PersonalRanking"
+        android:layout_width="176dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/TextView3"
+        app:layout_constraintEnd_toEndOf="@+id/TextView3"
+        app:layout_constraintStart_toStartOf="@+id/TextView3"
+        app:layout_constraintTop_toTopOf="@+id/TextView3"
+        app:srcCompat="@drawable/kuang" />
+
+</android.support.constraint.ConstraintLayout>
