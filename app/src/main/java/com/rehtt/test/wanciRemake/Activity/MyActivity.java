@@ -258,12 +258,18 @@ public class MyActivity extends AppCompatActivity {
 
             switch (msg.getData().getString("show")) {
                 case "WrongWord":
-                    ArrayAdapter WrongWord = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("WrongWord"));
-                    listView.setAdapter(WrongWord);
+                    try {
+                        ArrayAdapter WrongWord = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("WrongWord"));
+                        listView.setAdapter(WrongWord);
+                    } catch (Exception e) {
+                    }
                     break;
                 case "Vocabulary":
-                    ArrayAdapter Vocabulary = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("Vocabulary"));
-                    listView.setAdapter(Vocabulary);
+                    try {
+                        ArrayAdapter Vocabulary = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("Vocabulary"));
+                        listView.setAdapter(Vocabulary);
+                    } catch (Exception e) {
+                    }
                     break;
                 case "delete":
                     if (msg.what == 1) {

@@ -54,8 +54,7 @@ public class Vocabulary {
             }
 
         }catch (Exception e){
-            list.add(null);
-            id.add(null);
+
         }
 
     }

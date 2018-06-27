@@ -50,8 +50,7 @@ public class WrongWord {
             }
 
         } catch (Exception e) {
-            list.add(null);
-            id.add(null);
+
         }
 
     }
