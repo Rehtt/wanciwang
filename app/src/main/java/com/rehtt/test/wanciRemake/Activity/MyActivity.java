@@ -3,6 +3,7 @@ package com.rehtt.test.wanciRemake.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.rehtt.test.wanciRemake.R;
 import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MyActivity extends AppCompatActivity {
 
@@ -127,8 +130,12 @@ public class MyActivity extends AppCompatActivity {
 
     }
 
+    private List<HashMap<String, String>> getAllWordRank;
+
     public void PersonalRanking(View view) {
         showAn("PersonalRanking");
+
+
     }
 
     public void WrongWord(View view) {
@@ -155,6 +162,7 @@ public class MyActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
             switch (msg.getData().getString("show")) {
                 case "WrongWord":
                     ArrayAdapter WrongWord = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("WrongWord"));
@@ -164,10 +172,12 @@ public class MyActivity extends AppCompatActivity {
                     ArrayAdapter Vocabulary = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("Vocabulary"));
                     listView.setAdapter(Vocabulary);
                     break;
+
                 default:
                     break;
 
             }
+
             closeLocalK();
         }
     };

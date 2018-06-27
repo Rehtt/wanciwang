@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.rehtt.test.wanciRemake.Activity.MyActivity;
+import com.rehtt.test.wanciRemake.Activity.PersonalRankingActivity;
 import com.rehtt.test.wanciRemake.Activity.PvEActivity;
 import com.rehtt.test.wanciRemake.DialogActivity.LoginDialog;
 import com.rehtt.test.wanciRemake.DialogActivity.PvEDialog;
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (y >= dip.px(165) && y < dip.px(201)) {
                     startActivity(new Intent().setClass(MainActivity.this, MyActivity.class));
                 } else if (y >= dip.px(221) && y < dip.px(258)) {
-
+                    startActivity(new Intent().setClass(MainActivity.this, PersonalRankingActivity.class));
                 } else if (y >= dip.px(273) && y < dip.px(313)) {
 
                 }

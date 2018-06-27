@@ -2,6 +2,8 @@ package com.rehtt.test.wanciRemake;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,60 +12,22 @@ import java.util.List;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    private List<DataBean> data;
 
     @Test
     public void addition_isCorrect() {
-        String s = null;
-        if (s==null){
-            System.out.print("y");
+
+        List<HashMap<String,String>>list=new ArrayList<>();
+        for (int i=0;i<10;i++){
+            HashMap<String, String> map =new HashMap<>();
+            map.put("i", String.valueOf(i));
+            list.add(map);
+        }
+
+        for(HashMap<String, String> list1:list){
+            System.out.print(list1.get("i")+"\n");
         }
     }
 
-    public List<DataBean> getData() {
-        return data;
-    }
-
-    public void setData(List<DataBean> data) {
-        this.data = data;
-    }
-
-
-    public static class DataBean {
-        /**
-         * id : 2
-         * english : abide
-         * chinese : vt.遵守 vt.忍受
-         */
-
-        private int id;
-        private String english;
-        private String chinese;
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getEnglish() {
-            return english;
-        }
-
-        public void setEnglish(String english) {
-            this.english = english;
-        }
-
-        public String getChinese() {
-            return chinese;
-        }
-
-        public void setChinese(String chinese) {
-            this.chinese = chinese;
-        }
-    }
 }
 
 
