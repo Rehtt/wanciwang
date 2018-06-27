@@ -7,6 +7,7 @@
     <string name="url_wrongwrod">http://threr.cn:8080/wanciwang/getError</string>
     <string name="url_getAll">http://threr.cn:8080/wanciwang/getAll</string>
     <string name="url_getAllWordRank">http://threr.cn:8080/wanciwang/getAllWordRank</string>
-
+    <string name="url_deleteFromAllWord">http://threr.cn:8080/wanciwang/deleteFromAllWord</string>
+    <string name="url_deleteFromErrorWord">http://threr.cn:8080/wanciwang/deleteFromErrorWord</string>
     <string name="error_0">服务器发生错误，请与管理员联系</string>
 </resources>

@@ -18,12 +18,13 @@ public class Vocabulary {
 
 
     public interface CallBack {
-        void putList(ArrayList list);
+        void putList(ArrayList list,ArrayList id);
     }
 
     private CallBack callBack;
 
     public ArrayList list = new ArrayList<>();
+    private ArrayList id=new ArrayList();
 
     public void getAll(String url, final CallBack callBack) {
         Map<String, String> map = new HashMap<>();
@@ -37,7 +38,7 @@ public class Vocabulary {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 jsonTo(response.body().string());
-                callBack.putList(list);
+                callBack.putList(list,id);
             }
         });
     }
@@ -49,10 +50,12 @@ public class Vocabulary {
             List<DataBean> dataBeanList = vocabulary.getData();
             for (DataBean dataBean : dataBeanList) {
                 list.add(dataBean.getEnglish() + "\n" + dataBean.getChinese());
+                id.add(dataBean.getId());
             }
 
         }catch (Exception e){
             list.add(null);
+            id.add(null);
         }
 
     }

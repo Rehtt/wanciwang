@@ -1,26 +1,34 @@
 package com.rehtt.test.wanciRemake.Activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RemoteViews;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.rehtt.test.wanciRemake.DialogActivity.LoadDialog;
 import com.rehtt.test.wanciRemake.R;
+import com.rehtt.test.wanciRemake.Tools.Data;
+import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
 import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MyActivity extends AppCompatActivity {
 
@@ -31,12 +39,40 @@ public class MyActivity extends AppCompatActivity {
     ImageView more;
     ListView listView;
 
+    //选项
+    String option = "MyInfo";
+    ArrayList Id = new ArrayList();
+    View view;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         new SetFullScreen(MyActivity.this);
         init();
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (option) {
+                    case "MyInfo":
+                        break;
+                    case "More":
+                        break;
+                    case "Vocabulary":
+                        delete(getString(R.string.url_deleteFromAllWord), position, option);
+                        break;
+                    case "PersonalRanking":
+                        break;
+                    case "WrongWord":
+                        delete(getString(R.string.url_deleteFromErrorWord), position, option);
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
 
     }
 
@@ -49,6 +85,54 @@ public class MyActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.ListView);
         showAn("MyInfo");
     }
+
+    private void delete(String url, int position, final String view) {
+        Map<String, String> map = new HashMap<>();
+        map.put("userName", new Data().getUser());
+        map.put("id", String.valueOf(Id.get(position)));
+        OkhttpNet.doPost(url, map, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String res = response.body().string();
+                Bundle bundle = new Bundle();
+                Message message = new Message();
+                bundle.putString("show", "delete");
+                Log.e("qwe", res);
+                try {
+                    Gson gson = new Gson();
+                    ress js = gson.fromJson(res, ress.class);
+                    if (js.getData().equals("success")) {
+                        bundle.putString("view", view);
+                        message.what = 1;
+                    } else
+                        message.what = 0;
+                } catch (Exception e) {
+                    message.what = 0;
+                }
+                message.setData(bundle);
+                handler.sendMessage(message);
+            }
+        });
+
+    }
+
+    class ress {
+        private String data;
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+    }
+
 
     //显示、隐藏按钮
     private void showAn(String i) {
@@ -111,14 +195,20 @@ public class MyActivity extends AppCompatActivity {
 
     public void More(View view) {
         showAn("More");
+        option = "More";
+        this.view = view;
     }
 
     public void Vocabulary(View view) {
         showAn("Vocabulary");
+        option = "Vocabulary";
         showLocalK();
+        this.view = view;
+
         new Vocabulary().getAll(getString(R.string.url_getAll), new Vocabulary.CallBack() {
             @Override
-            public void putList(ArrayList list) {
+            public void putList(ArrayList list, ArrayList id) {
+                Id = id;
                 Bundle bundle = new Bundle();
                 Message message = new Message();
                 bundle.putString("show", "Vocabulary");
@@ -130,21 +220,24 @@ public class MyActivity extends AppCompatActivity {
 
     }
 
-    private List<HashMap<String, String>> getAllWordRank;
 
     public void PersonalRanking(View view) {
         showAn("PersonalRanking");
+        option = "PersonalRanking";
+        this.view = view;
 
 
     }
 
     public void WrongWord(View view) {
         showAn("WrongWord");
+        option = "WrongWord";
         showLocalK();
+        this.view = view;
         new WrongWord().getError(getString(R.string.url_wrongwrod), new WrongWord.CallBack() {
             @Override
-            public void putList(ArrayList arrayList) {
-
+            public void putList(ArrayList arrayList, ArrayList id) {
+                Id = id;
                 Bundle bundle = new Bundle();
                 Message message = new Message();
                 bundle.putString("show", "WrongWord");
@@ -172,7 +265,22 @@ public class MyActivity extends AppCompatActivity {
                     ArrayAdapter Vocabulary = new ArrayAdapter(MyActivity.this, android.R.layout.simple_list_item_1, msg.getData().getStringArrayList("Vocabulary"));
                     listView.setAdapter(Vocabulary);
                     break;
-
+                case "delete":
+                    if (msg.what == 1) {
+                        Toast.makeText(MyActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                        switch (msg.getData().getString("view")) {
+                            case "Vocabulary":
+                                Vocabulary(view);
+                                break;
+                            case "WrongWord":
+                                WrongWord(view);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else
+                        Toast.makeText(MyActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+                    break;
                 default:
                     break;
 
@@ -184,5 +292,7 @@ public class MyActivity extends AppCompatActivity {
 
     public void MyInfo(View view) {
         showAn("MyInfo");
+        option = "MyInfo";
+        this.view = view;
     }
 }

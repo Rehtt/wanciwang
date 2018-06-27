@@ -28,8 +28,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.GenericTransitionOptions;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
@@ -257,6 +255,7 @@ public class PersonalRankingActivity extends AppCompatActivity {
             TextView name = (TextView) convertView.findViewById(R.id.name);
             TextView word = (TextView) convertView.findViewById(R.id.wordNum);
             ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView2);
+
             ImageView ico = (ImageView) convertView.findViewById(R.id.ico);
 
             //显示排名
@@ -269,11 +268,17 @@ public class PersonalRankingActivity extends AppCompatActivity {
             else
                 Glide.with(convertView).load(fontImage(String.valueOf(position + 1))).into(ico);
 
-            //显示头像
+            //显示头像，圆形
+
             Glide.with(convertView)
                     .load(listt.get(position).get("p"))
                     .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                     .into(imageView);
+
+
+
+
+
             //显示名字
             if (listt.get(position).get("userName") != null) {
                 name.setText(listt.get(position).get("userName").toString());

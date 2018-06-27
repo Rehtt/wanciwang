@@ -1,5 +1,8 @@
 package com.rehtt.test.wanciRemake;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,16 +19,8 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
 
-        List<HashMap<String,String>>list=new ArrayList<>();
-        for (int i=0;i<10;i++){
-            HashMap<String, String> map =new HashMap<>();
-            map.put("i", String.valueOf(i));
-            list.add(map);
-        }
 
-        for(HashMap<String, String> list1:list){
-            System.out.print(list1.get("i")+"\n");
-        }
+
     }
 
 }

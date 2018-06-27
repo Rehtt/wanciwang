@@ -18,7 +18,8 @@ import okhttp3.Response;
 public class WrongWord {
 
 
-    ArrayList list = new ArrayList();
+    private ArrayList list = new ArrayList();
+    private ArrayList id=new ArrayList();
 
     public void getError(String url, final CallBack listt) {
         Map<String, String> map = new HashMap<>();
@@ -32,7 +33,7 @@ public class WrongWord {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 jsonToList(response.body().string());
-                listt.putList(list);
+                listt.putList(list,id);
             }
         });
     }
@@ -45,17 +46,19 @@ public class WrongWord {
 
             for (WrongWordJ.DataBean dataBean : lists) {
                 list.add(dataBean.getEnglish() + "\n" + dataBean.getChinese());
+                id.add(dataBean.getId());
             }
 
         } catch (Exception e) {
             list.add(null);
+            id.add(null);
         }
 
     }
 
 
     public interface CallBack {
-        void putList(ArrayList arrayList);
+        void putList(ArrayList arrayList,ArrayList id);
     }
 
 
