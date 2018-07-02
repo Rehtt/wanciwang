@@ -1,18 +1,27 @@
 package com.rehtt.test.wanciRemake.Activity;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -26,7 +35,9 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.rehtt.test.wanciRemake.DialogActivity.LoadDialog;
 import com.rehtt.test.wanciRemake.R;
 import com.rehtt.test.wanciRemake.Tools.Data;
+import com.rehtt.test.wanciRemake.Tools.Dip;
 import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
+import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,17 +58,28 @@ public class PvEActivity extends AppCompatActivity {
     TextView showWord;
     TextView showTime;
     TextView showSper;
+    TextView GlobalTime;
     Button button;
+
+    String word = "";
+
+    //初始化
+    int blood1 = 5;
+    int blood2 = 5;
+    int p1 = 0;
+    int p2 = 0;
 
     String voiceEnglish = null;
     boolean isEND = false;
+    LoadDialog loadDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pv_e);
+        new SetFullScreen(this);
 
-        button = (Button) findViewById(R.id.button);
+        button = (Button) findViewById(R.id.button7);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,9 +89,10 @@ public class PvEActivity extends AppCompatActivity {
                     Toast.makeText(PvEActivity.this, "游戏已结束", Toast.LENGTH_SHORT).show();
             }
         });
-        showWord = (TextView) findViewById(R.id.show);
+        showWord = (TextView) findViewById(R.id.word);
         showTime = (TextView) findViewById(R.id.time);
         showSper = (TextView) findViewById(R.id.voiceEnglish);
+        GlobalTime = (TextView) findViewById(R.id.globalTime);
         showTime.setText("10");
         showSper.setText("");
 
@@ -78,12 +101,133 @@ public class PvEActivity extends AppCompatActivity {
         getWord();
 
         //显示加载框
-        LoadDialog loadDialog=new LoadDialog(PvEActivity.this);
+        loadDialog = new LoadDialog(PvEActivity.this);
         loadDialog.setCanceledOnTouchOutside(false);
         loadDialog.show();
 
+        imageView = (ImageView) findViewById(R.id.blood1);
+        imageView2 = (ImageView) findViewById(R.id.blood2);
+        po1 = (ImageView) findViewById(R.id.portrait1);
+        po2 = (ImageView) findViewById(R.id.portrait2);
+        po1_x = (ImageView) findViewById(R.id.p1);
+        po2_x = (ImageView) findViewById(R.id.p2);
+        po1_x.setVisibility(View.GONE);
+        po2_x.setVisibility(View.GONE);
+
+
+        imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
+        imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
+
+        Glide.with(this).load("http://test.rehtt.com/test2.jpg").apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                .into(po1);
+        Glide.with(this).load("http://test.rehtt.com/test.png").apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                .into(po2);
     }
 
+    ImageView imageView;
+    ImageView imageView2;
+    ImageView po1;
+    ImageView po2;
+    ImageView po1_x;
+    ImageView po2_x;
+
+    /*
+     * blood            剩余血量（0-5）
+     * p                赢的数次（0-2）
+     * idd              玩家（1-2）
+     */
+    @SuppressLint("Range")
+    private Bitmap bloodStrip(int blood, int p, int idd) {
+        float blood_w = 480;          //血条长度
+        float blood_h = 15;           //血条高度
+        float blood_top = 10;        //血条离画布顶部距离
+        float blood_left = 0;         //血条离画布左边距离
+        float blood_oblique = 22;     //血条倾斜
+        float blood_block = 5;        //血块
+
+        float roundCount1_edge = 30;    //大小
+        float roundCount1_top = 50;     //离画布顶部的距离
+        float roundCount1_left = 30;    //离画布左侧的距离
+        float roundCount1_oblique = 20; //倾斜
+
+        float roundCount2_edge = 40;    //大小
+        float roundCount2_top = 45;     //离画布顶部的距离
+        float roundCount2_left = 100;    //离画布左侧的距离
+        float roundCount2_oblique = 30; //倾斜
+
+        Dip dip = new Dip();
+        dip.setContext(this);
+
+        Bitmap bitmap1;
+        bitmap1 = Bitmap.createBitmap(520, 85, Bitmap.Config.ARGB_8888);
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(bitmap1);
+        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(dip.px(1));
+
+        //血条
+        Path path = new Path();
+        float[] pk_k = new float[]{blood_oblique, blood_top, blood_w + blood_oblique, blood_top, blood_w + blood_oblique, blood_top, blood_w, blood_top + blood_h, blood_w, blood_top + blood_h, blood_left, blood_top + blood_h, blood_left, blood_top + blood_h, blood_oblique, blood_top};
+        canvas.drawLines(pk_k, paint);
+
+        //根据剩余血量填充
+        float blood_blok = blood_w / blood_block;   //计算每块血量长度
+        float blood_fillTop = blood_blok * blood + blood_oblique;   //填充顶部的长度
+        float blood_fillDown = blood_blok * blood;                  //填充底部的长度
+        path.lineTo(blood_oblique, blood_top);
+        path.lineTo(blood_fillTop, blood_top);
+        path.lineTo(blood_fillDown, blood_top + blood_h);
+        path.lineTo(blood_left, blood_top + blood_h);
+        path.lineTo(blood_oblique, blood_top);
+        path.close();
+        canvas.drawPath(path, paint);
+
+
+        if (p > 0) {
+            //计数1填充
+            path = new Path();
+            path.lineTo(roundCount1_left + roundCount1_oblique, roundCount1_top);
+            path.lineTo(roundCount1_left + roundCount1_oblique + roundCount1_edge, roundCount1_top);
+            path.lineTo(roundCount1_left + roundCount1_edge, roundCount1_top + roundCount1_edge);
+            path.lineTo(roundCount1_left, roundCount1_top + roundCount1_edge);
+            path.lineTo(roundCount1_left + roundCount1_oblique, roundCount1_top);
+            path.close();
+            canvas.drawPath(path, paint);
+        }
+        if (p == 2) {
+            //计数2填充
+            path = new Path();
+            path.lineTo(roundCount2_left + roundCount2_oblique, roundCount2_top);
+            path.lineTo(roundCount2_left + roundCount2_oblique + roundCount2_edge, roundCount2_top);
+            path.lineTo(roundCount2_left + roundCount2_edge, roundCount2_top + roundCount2_edge);
+            path.lineTo(roundCount2_left, roundCount2_top + roundCount2_edge);
+            path.lineTo(roundCount2_left + roundCount2_oblique, roundCount2_top);
+            path.close();
+            canvas.drawPath(path, paint);
+        }
+        //计数1
+        float[] k1 = new float[]{roundCount1_left + roundCount1_oblique, roundCount1_top, roundCount1_left + roundCount1_oblique + roundCount1_edge, roundCount1_top, roundCount1_left + roundCount1_oblique + roundCount1_edge, roundCount1_top, roundCount1_left + roundCount1_edge, roundCount1_top + roundCount1_edge, roundCount1_left + roundCount1_edge, roundCount1_top + roundCount1_edge, roundCount1_left, roundCount1_top + roundCount1_edge, roundCount1_left, roundCount1_top + roundCount1_edge, roundCount1_left + roundCount1_oblique, roundCount1_top};
+        canvas.drawLines(k1, paint);
+
+
+        //计数2
+        float[] k2 = new float[]{roundCount2_left + roundCount2_oblique, roundCount2_top, roundCount2_left + roundCount2_oblique + roundCount2_edge, roundCount2_top, roundCount2_left + roundCount2_oblique + roundCount2_edge, roundCount2_top, roundCount2_left + roundCount2_edge, roundCount2_top + roundCount2_edge, roundCount2_left + roundCount2_edge, roundCount2_top + roundCount2_edge, roundCount2_left, roundCount2_top + roundCount2_edge, roundCount2_left, roundCount2_top + roundCount2_edge, roundCount2_left + roundCount2_oblique, roundCount2_top};
+        canvas.drawLines(k2, paint);
+
+        if (idd == 1) {
+            return bitmap1;
+        } else if (idd == 2) {
+            Matrix matrix = new Matrix();
+            matrix.postScale(-1, 1);
+            Bitmap bitmap2 = Bitmap.createBitmap(bitmap1, 0, 0, bitmap1.getWidth(), bitmap1.getHeight(), matrix, true);
+
+            return bitmap2;
+        } else
+            return null;
+
+    }
+
+    //获取单词
     private void getWord() {
         Map<String, String> map = new HashMap<>();
         map.put("grade", String.valueOf(Grade));
@@ -109,8 +253,8 @@ public class PvEActivity extends AppCompatActivity {
 
                         }
                         game(jsons);
-                    }catch (Exception e){
-                        Log.e("qwerrt",e.getMessage());
+                    } catch (Exception e) {
+                        Log.e("qwerrt", e.getMessage());
                     }
 
                 } else {
@@ -125,7 +269,33 @@ public class PvEActivity extends AppCompatActivity {
         });
     }
 
+    //动画
+    private AlphaAnimation animation(int i) {
+        AlphaAnimation alphaAnimation;
+        switch (i) {
+            case 1:
+                alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+                alphaAnimation.setDuration(1000);
+                alphaAnimation.setFillAfter(true);
+                alphaAnimation.setRepeatCount(1);
+                return alphaAnimation;
+            case 2:
+                alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+                alphaAnimation.setDuration(3000);
+                alphaAnimation.setFillAfter(true);
+                return alphaAnimation;
+            default:
+                return null;
+        }
+    }
 
+    private void ready() {
+        Bundle bundle = new Bundle();
+        Message message = new Message();
+
+    }
+
+    //游戏过程
     private void game(final List<GetWord> list) {
 
         new Thread(new Runnable() {
@@ -135,64 +305,135 @@ public class PvEActivity extends AppCompatActivity {
                 List<String> id = new ArrayList<>();
                 List<String> state = new ArrayList<>();
                 int userFraction = 0;
+                Bundle bundle = new Bundle();
+                Message msg = new Message();
+                bundle.putString("show", "loadDialog");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
+
+
+                int g = 0;    //局数
+                int w = 0;
                 for (final GetWord getWord : list) {
-                    Bundle bundle = new Bundle();
-                    Message msg = new Message();
-                    bundle.putString("show", "showEnglish");
-                    bundle.putString("English", getWord.getEnglish());
-                    msg.setData(bundle);
-                    handler.sendMessage(msg);
-                    boolean isTime = false;
-                    boolean isTrue = false;
-                    long start = System.currentTimeMillis();
-                    long end = start;
+                    if (w < 5) {
+                        int t = 3;
+                        boolean tt = true;
+                        while (tt) {
+                            if (t != 0) {
+                                try {
+                                    bundle = new Bundle();
+                                    msg = new Message();
+                                    bundle.putString("show", "ready");
+                                    bundle.putString("ready", String.valueOf(t));
+                                    msg.setData(bundle);
+                                    handler.sendMessage(msg);
+                                    --t;
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                tt = false;
+                            }
 
-                    int ti = 10;
-                    while (!isTime && !isTrue) {
-                        if (end - start < 10000) {
-                            if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(getWord.getEnglish())) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(PvEActivity.this,"true",Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                                isTrue = true;
-                                id.add(String.valueOf(getWord.getId()));
-                                state.add("1");
-                                userFraction++;
-                            }
-                            try {
-                                Thread.sleep(1000);
-                                ti--;
-                                end = System.currentTimeMillis();
-                                bundle = new Bundle();
-                                msg = new Message();
-                                bundle.putString("show", "Time");
-                                bundle.putString("Time", String.valueOf(ti));
-                                msg.setData(bundle);
-                                handler.sendMessage(msg);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            isTime = true;
-                            id.add(String.valueOf(getWord.getId()));
-                            state.add("0");
                         }
-                    }
+                        bundle = new Bundle();
+                        msg = new Message();
+                        bundle.putString("show", "showEnglish");
+                        bundle.putString("English", getWord.getEnglish());
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+                        boolean isTime = false;
+                        boolean isTrue = false;
+                        long start = System.currentTimeMillis();
+                        long end = start;
+                        int blood = 0;    //谁扣了血
 
+                        int ti = 10;        //时间
+                        while (!isTime && !isTrue) {
+                            if (end - start < 10000) {
+                                if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(getWord.getEnglish())) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(PvEActivity.this, "true", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    isTrue = true;
+                                    id.add(String.valueOf(getWord.getId()));
+                                    state.add("1");
+                                    userFraction++;
+                                    blood = 2;
+
+                                    blood2--;
+                                }
+                                try {
+                                    Thread.sleep(1000);
+                                    ti--;
+                                    end = System.currentTimeMillis();
+                                    bundle = new Bundle();
+                                    msg = new Message();
+                                    bundle.putString("show", "Time");
+                                    bundle.putString("Time", String.valueOf(ti));
+                                    msg.setData(bundle);
+                                    handler.sendMessage(msg);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                isTime = true;
+                                id.add(String.valueOf(getWord.getId()));
+                                state.add("0");
+                                blood = 1;
+
+                                blood1--;
+                            }
+                        }
+                        //刷新血条
+                        final int finalBlood = blood;
+                        bundle = new Bundle();
+                        msg = new Message();
+                        bundle.putString("show", "bloods");
+                        bundle.putInt("fork", finalBlood);
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+
+                    } else {
+                        //新的一局
+                        w = 0;
+                        ++g;
+                        p1 = blood1 > blood2 ? ++p1 : p1;
+                        p2 = blood2 > blood1 ? ++p2 : p2;
+                        final String who = blood1 > blood2 ? "玩家" : "电脑";
+                        blood1 = 5;
+                        blood2 = 5;
+                        final int finalG = g;
+                        bundle = new Bundle();
+                        msg = new Message();
+                        bundle.putString("show", "bloods");
+                        bundle.putInt("fork", 0);
+                        bundle.putString("bureau", "bureau");
+                        bundle.putString("bureau_n", String.valueOf(finalG));
+                        bundle.putString("bureau_who", who);
+                        msg.setData(bundle);
+                        handler.sendMessage(msg);
+
+                        try {
+                            Thread.sleep(2000);
+                            showWord.clearAnimation();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    w++;
                 }
                 isEND = true;
                 String ifFali = null;
                 if (Grade != 0) {
                     //人机模式
                     int robotFraction = 15 - userFraction;
-                    if (robotFraction > userFraction) {
-                        ifFali = "1";
-                    } else {
-                        ifFali = "0";
-                    }
+                    ifFali = robotFraction > userFraction ? "1" : "0";
                 }
 
                 long useTime = System.currentTimeMillis() - time;
@@ -251,6 +492,8 @@ public class PvEActivity extends AppCompatActivity {
     //语音识别数据
     private void Voice() {
         final RecognizerDialog recognizerDialog = new RecognizerDialog(this, null);
+
+
         recognizerDialog.setParameter(SpeechConstant.LANGUAGE, "en_us");
         recognizerDialog.setParameter(SpeechConstant.ACCENT, null);
         recognizerDialog.setListener(new RecognizerDialogListener() {
@@ -266,10 +509,10 @@ public class PvEActivity extends AppCompatActivity {
 
                         }
                     }
-                    Bundle bundle=new Bundle();
-                    Message msg=new Message();
-                    bundle.putString("show","voiceEnglish");
-                    bundle.putString("voiceEnglish",voiceEnglish);
+                    Bundle bundle = new Bundle();
+                    Message msg = new Message();
+                    bundle.putString("show", "voiceEnglish");
+                    bundle.putString("voiceEnglish", voiceEnglish);
                     msg.setData(bundle);
                     handler.sendMessage(msg);
 
@@ -282,16 +525,26 @@ public class PvEActivity extends AppCompatActivity {
             }
         });
         recognizerDialog.show();
+        TextView txt = (TextView) recognizerDialog.getWindow().getDecorView().findViewWithTag("textlink");
+        txt.setText(word);
     }
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
             switch (msg.getData().getString("show")) {
+                case "loadDialog":
+                    loadDialog.dismiss();
+                    break;
+                case "ready":
+                    showWord.setText("准备");
+                    showTime.setText(msg.getData().getString("ready"));
+                    break;
                 case "showEnglish":
-                    showWord.setText(msg.getData().getString("English"));
-                    loadDone();
+                    word = msg.getData().getString("English");
+                    showWord.setText(word);
                     break;
                 case "Time":
                     showTime.setText(msg.getData().getString("Time"));
@@ -299,20 +552,29 @@ public class PvEActivity extends AppCompatActivity {
                 case "voiceEnglish":
                     showSper.setText(msg.getData().getString("voiceEnglish"));
                     break;
+                case "bloods":
+                    imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
+                    imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
+                    if (msg.getData().getInt("fork") == 1) {
+                        po1_x.setVisibility(View.VISIBLE);
+                        po1_x.startAnimation(animation(1));
+
+                    } else if (msg.getData().getInt("fork") == 2) {
+                        po2_x.setVisibility(View.VISIBLE);
+                        po2_x.startAnimation(animation(1));
+                    }
+                    break;
+
                 default:
                     break;
+            }
+            if (msg.getData().getString("bureau") != null) {
+                showWord.setText("第" + msg.getData().getString("bureau_n") + "局" + msg.getData().getString("bureau_who") + "胜");
+                showWord.startAnimation(animation(2));
             }
 
         }
     };
-
-    //加载完成
-    public void loadDone() {
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(PvEActivity.this);
-        Intent intent = new Intent("LoadDone");
-        localBroadcastManager.sendBroadcast(intent);
-    }
-
 
 
     class GetWord {

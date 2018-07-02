@@ -17,23 +17,11 @@ public class LoadDialog extends Dialog {
         super(context);
         setContentView(R.layout.load_dialog_layout);
 
-        LocalBroadcastManager localBroadcastManager=LocalBroadcastManager.getInstance(getContext());
-        IntentFilter intentFilter=new IntentFilter();
-        LocalReceiver receiver =new LocalReceiver();
-        intentFilter.addAction("LoadDone");
-        localBroadcastManager.registerReceiver(receiver,intentFilter);
-
 
     }
 
 
 
-class LocalReceiver extends BroadcastReceiver{
 
-    @Override
-    public void onReceive(final Context context, Intent intent) {
-        LoadDialog.this.dismiss();
-    }
-}
 
 }

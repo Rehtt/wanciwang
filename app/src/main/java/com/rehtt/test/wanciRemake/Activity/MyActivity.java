@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.rehtt.test.wanciRemake.Tools.Data;
 import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
 import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +75,24 @@ public class MyActivity extends AppCompatActivity {
                 return false;
             }
         });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (option) {
+                    case "MyInfo":
+                        //在这里跳转到手机系统相册里面
+                        // 使用意图直接调用手机相册
+                        Intent intent = new Intent(
+                                Intent.ACTION_PICK,
+                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        // 打开手机相册,设置请求码
+                        startActivityForResult(intent, 0);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
 
     }
 
@@ -86,6 +106,7 @@ public class MyActivity extends AppCompatActivity {
         showAn("MyInfo");
     }
 
+    //删除
     private void delete(String url, int position, final String view) {
         Map<String, String> map = new HashMap<>();
         map.put("userName", new Data().getUser());
@@ -133,6 +154,22 @@ public class MyActivity extends AppCompatActivity {
         }
     }
 
+    //上传
+    private void upFile(File file) {
+        OkhttpNet.doFile(getString(R.string.url_uploadPicture), file.getName(), file.getPath(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+            }
+        });
+    }
+
+    ;
 
     //显示、隐藏按钮
     private void showAn(String i) {
@@ -178,18 +215,18 @@ public class MyActivity extends AppCompatActivity {
     }
 
     //显示加载框
+    LoadDialog loadDialog;
+
     private void showLocalK() {
         //显示加载框
-        LoadDialog loadDialog = new LoadDialog(MyActivity.this);
+        loadDialog = new LoadDialog(MyActivity.this);
         loadDialog.setCanceledOnTouchOutside(false);
         loadDialog.show();
     }
 
     //关闭加载框
     public void closeLocalK() {
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(MyActivity.this);
-        Intent intent = new Intent("LoadDone");
-        localBroadcastManager.sendBroadcast(intent);
+        loadDialog.dismiss();
     }
 
 

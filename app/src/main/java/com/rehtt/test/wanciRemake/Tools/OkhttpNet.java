@@ -108,7 +108,7 @@ public class OkhttpNet {
                         RequestBody.create(MEDIA_TYPE, new File(pathName)));
         //发出请求参数
         Request request = new Request.Builder()
-                .header("Authorization", "Client-ID " + "9199fdef135c122")
+//                .header("Authorization", "Client-ID " + "9199fdef135c122")
                 .url(url)
                 .post(builder.build())
                 .build();
