@@ -13,7 +13,7 @@ public class SetFullScreen {
      * @param context 指定的页面
      */
     public SetFullScreen(AppCompatActivity context) {
-        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); //设置横屏
+//        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE); //设置横屏
         context.getSupportActionBar().hide();   //隐藏标题栏
         //隐藏虚拟按键，并且全屏
         if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api

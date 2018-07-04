@@ -1,6 +1,7 @@
 package com.rehtt.test.wanciRemake.Activity;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,12 +11,16 @@ import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +38,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.rehtt.test.wanciRemake.DialogActivity.LoadDialog;
+import com.rehtt.test.wanciRemake.DialogActivity.WordsDialog;
 import com.rehtt.test.wanciRemake.R;
 import com.rehtt.test.wanciRemake.Tools.Data;
 import com.rehtt.test.wanciRemake.Tools.Dip;
@@ -228,6 +234,7 @@ public class PvEActivity extends AppCompatActivity {
 
     }
 
+    List<GetWord> words=new ArrayList<>();      //
     //获取单词
     private void getWord() {
         Map<String, String> map = new HashMap<>();
@@ -253,6 +260,7 @@ public class PvEActivity extends AppCompatActivity {
                             jsons.add(json);
 
                         }
+                        words=jsons;
                         game(jsons);
                     } catch (Exception e) {
                         Log.e("qwerrt", e.getMessage());
@@ -292,6 +300,9 @@ public class PvEActivity extends AppCompatActivity {
 
 
     long startTime = System.currentTimeMillis();
+    //单词id及状态
+    List<String> id = new ArrayList<>();
+    List<String> state = new ArrayList<>();
 
     //游戏过程
     private void game(final List<GetWord> list) {
@@ -300,8 +311,7 @@ public class PvEActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                List<String> id = new ArrayList<>();
-                List<String> state = new ArrayList<>();
+
                 int userFraction = 0;
                 Bundle bundle = new Bundle();
                 Message msg = new Message();
@@ -313,7 +323,7 @@ public class PvEActivity extends AppCompatActivity {
                 int g = 0;    //局数
                 int w = 0;
 
-                for (final GetWord getWord : list) {
+                for (int i = 0; i < list.size(); i++) {
                     if (w < 5) {
                         int t = 3;
                         boolean tt = true;
@@ -339,8 +349,8 @@ public class PvEActivity extends AppCompatActivity {
                         bundle = new Bundle();
                         msg = new Message();
                         bundle.putString("show", "showEnglish");
-                        bundle.putString("English", getWord.getEnglish());
-                        bundle.putString("Chinese", getWord.getChinese());
+                        bundle.putString("English", list.get(i).getEnglish());
+                        bundle.putString("Chinese", list.get(i).getChinese());
                         msg.setData(bundle);
                         handler.sendMessage(msg);
                         boolean isTime = false;
@@ -352,7 +362,7 @@ public class PvEActivity extends AppCompatActivity {
                         int ti = 10;        //时间
                         while (!isTime && !isTrue) {
                             if (end - start < 10000) {
-                                if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(getWord.getEnglish())) {
+                                if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(list.get(i).getEnglish())) {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -360,7 +370,7 @@ public class PvEActivity extends AppCompatActivity {
                                         }
                                     });
                                     isTrue = true;
-                                    id.add(String.valueOf(getWord.getId()));
+                                    id.add(String.valueOf(list.get(i).getId()));
                                     state.add("1");
                                     userFraction++;
                                     blood = 2;
@@ -382,7 +392,7 @@ public class PvEActivity extends AppCompatActivity {
                                 }
                             } else {
                                 isTime = true;
-                                id.add(String.valueOf(getWord.getId()));
+                                id.add(String.valueOf(list.get(i).getId()));
                                 state.add("0");
                                 blood = 1;
 
@@ -397,10 +407,11 @@ public class PvEActivity extends AppCompatActivity {
                         bundle.putInt("fork", finalBlood);
                         msg.setData(bundle);
                         handler.sendMessage(msg);
-
+                        ++w;
                     } else {
                         //新的一局
                         w = 0;
+                        --i;
                         ++g;
                         p1 = blood1 > blood2 ? ++p1 : p1;
                         p2 = blood2 > blood1 ? ++p2 : p2;
@@ -420,21 +431,24 @@ public class PvEActivity extends AppCompatActivity {
 
                         try {
                             Thread.sleep(2000);
-                            showWord.clearAnimation();
+                            bundle = new Bundle();
+                            msg = new Message();
+                            bundle.putString("show", "clearAnimation");
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
 
                     }
-                    w++;
                 }
                 isEND = true;
-                String ifFali = null;
-                if (Grade != 0) {
-                    //人机模式
-                    int robotFraction = 15 - userFraction;
-                    ifFali = robotFraction > userFraction ? "1" : "0";
-                }
+//                String ifFali = null;
+//                if (Grade != 0) {
+//                    //人机模式
+//                    int robotFraction = 15 - userFraction;
+//                    ifFali = robotFraction > userFraction ? "1" : "0";
+//                }
                 bundle = new Bundle();
                 msg = new Message();
                 bundle.putString("show", "end");
@@ -443,8 +457,7 @@ public class PvEActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
 
                 long useTime = System.currentTimeMillis() - startTime;
-                upJson(id, state, useTime, ifFali);
-
+                upJson(useTime, p1 > p2 ? "0" : "1");
 
             }
         }).start();
@@ -455,27 +468,26 @@ public class PvEActivity extends AppCompatActivity {
     /**
      * 上传结果
      *
-     * @param idd      单词id
-     * @param startee  单词状态
      * @param gameTime 游戏时间
      * @param ifFail   人机模式下胜负
      * @return
      */
-    private void upJson(List<String> idd, List<String> startee, long gameTime, String ifFail) {
+    private void upJson( long gameTime, String ifFail) {
 
-        for (int i=0;i<idd.size();i++){
-            UpData upData=new UpData();
-            upData.setId(idd.get(i));
-            upData.setState(startee.get(i));
+        for (int i = 0; i < id.size(); i++) {
+            UpData upData = new UpData();
+            upData.setId(id.get(i));
+            upData.setState(state.get(i));
             upDataList.add(upData);
         }
         Gson gson = new Gson();
         String json = gson.toJson(upDataList);
         Map<String, String> map = new HashMap<>();
-        map.put("userName",new Data().getUser());
-        map.put("ifFail",ifFail);
+        map.put("userName", new Data().getUser());
+        map.put("ifFail", ifFail);
         map.put("gameTime", String.valueOf(gameTime));
-        map.put("data",json);
+        map.put("data", json);
+        Log.e("qwe", "\n" + map.get("userName") + "\n" + map.get("ifFail") + "\n" + map.get("gameTime") + "\n" + map.get("data"));
 
         OkhttpNet.doPost(getString(R.string.url_updateResult), map, new Callback() {
             @Override
@@ -587,6 +599,40 @@ public class PvEActivity extends AppCompatActivity {
                     imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
                     imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
                     showWord.setText(msg.getData().getString("whoWin") + "胜");
+                    AlertDialog alertDialog = new AlertDialog.Builder(PvEActivity.this)
+                            .setTitle("游戏结束")
+                            .setMessage(p1 > p2 ? "玩家" : "电脑" + "胜")
+                            .setNegativeButton("返回主页", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    PvEActivity.this.finish();
+                                }
+                            })
+                            .setPositiveButton("再来一局", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    bloodStrip(5, 0, 1);
+                                    bloodStrip(5, 0, 2);
+                                    getWord();
+                                }
+                            })
+                            .setNeutralButton("查看对战情况", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Map<String,String>map=new HashMap<>();
+                                    for (int i=0;i<state.size();i++){
+                                        map.put(words.get(i).getEnglish(),state.get(i));
+                                    }
+                                    new WordsDialog(PvEActivity.this,map).show();
+                                }
+                            })
+                            .create();
+                    alertDialog.show();
+
+
+                    break;
+                case "clearAnimation":
+                    showWord.clearAnimation();
                     break;
                 default:
                     break;
@@ -637,33 +683,34 @@ public class PvEActivity extends AppCompatActivity {
         }
     }
 
-    private List<UpData> upDataList=new ArrayList<>();
-     class UpData {
+    private List<UpData> upDataList = new ArrayList<>();
 
-         /**
-          * id : 2
-          * state : 0
-          */
+    class UpData {
 
-         private String id;
-         private String state;
+        /**
+         * id : 2
+         * state : 0
+         */
 
-         public String getId() {
-             return id;
-         }
+        private String id;
+        private String state;
 
-         public void setId(String id) {
-             this.id = id;
-         }
+        public String getId() {
+            return id;
+        }
 
-         public String getState() {
-             return state;
-         }
+        public void setId(String id) {
+            this.id = id;
+        }
 
-         public void setState(String state) {
-             this.state = state;
-         }
-     }
+        public String getState() {
+            return state;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+    }
 
     static class SpeechResult {
 

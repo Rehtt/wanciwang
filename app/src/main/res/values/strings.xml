@@ -3,12 +3,13 @@
     <string name="url_login">http://threr.cn:8080/wanciwang/login</string>
     <string name="url_register">http://threr.cn:8080/wanciwang/register</string>
     <string name="url_getWord">http://threr.cn:8080/wanciwang/getSomeWord</string>
-    <string name="url_updateResult">http://localhost:8080/wanciwang/updateResult</string>
+    <string name="url_updateResult">http://threr.cn:8080/wanciwang/updateResult</string>
     <string name="url_wrongwrod">http://threr.cn:8080/wanciwang/getError</string>
     <string name="url_getAll">http://threr.cn:8080/wanciwang/getAll</string>
     <string name="url_getAllWordRank">http://threr.cn:8080/wanciwang/getAllWordRank</string>
     <string name="url_deleteFromAllWord">http://threr.cn:8080/wanciwang/deleteFromAllWord</string>
     <string name="url_deleteFromErrorWord">http://threr.cn:8080/wanciwang/deleteFromErrorWord</string>
     <string name="url_uploadPicture">http://threr.cn:8080/wanciwang/uploadPicture</string>
+    <string name="url_getPersonInf">http://threr.cn:8080/wanciwang/getPersonInf</string>
     <string name="error_0">服务器发生错误，请与管理员联系</string>
 </resources>

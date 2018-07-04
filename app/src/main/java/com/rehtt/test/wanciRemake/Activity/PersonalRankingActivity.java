@@ -110,7 +110,7 @@ public class PersonalRankingActivity extends AppCompatActivity {
             map.put("id", String.valueOf(json1.getId()));
             map.put("userName", json1.getUserName());
             map.put("wordNum", json1.getAllWords());
-            map.put("p", "http://test.rehtt.com/test2.jpg");
+            map.put("pic", json1.getPic());
             listt.add(map);
 
         }
@@ -141,6 +141,7 @@ public class PersonalRankingActivity extends AppCompatActivity {
          * allTime : 7
          * failTime : 5
          * gameTime : 666
+         * pic : asd.jpg
          */
 
         private int id;
@@ -152,6 +153,15 @@ public class PersonalRankingActivity extends AppCompatActivity {
         private int allTime;
         private int failTime;
         private String gameTime;
+        private String pic;
+
+        public String getPic() {
+            return pic;
+        }
+
+        public void setPic(String pic) {
+            this.pic = pic;
+        }
 
         public int getId() {
             return id;
@@ -271,7 +281,7 @@ public class PersonalRankingActivity extends AppCompatActivity {
             //显示头像，圆形
 
             Glide.with(convertView)
-                    .load(listt.get(position).get("p"))
+                    .load(listt.get(position).get("pic"))
                     .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                     .into(imageView);
 

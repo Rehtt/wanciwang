@@ -85,16 +85,17 @@ public class MainActivity extends AppCompatActivity {
 //            Log.e("qwe",dip.dp(x)+"||"+dip.dp(y));
             if (x >= dip.px(440) && x < dip.px(555)) {
                 if (y >= dip.px(54) && y < dip.px(86)) {
-                    new PvEDialog(MainActivity.this).show();
+//                    new PvEDialog(MainActivity.this).show();
+                    startActivity(new Intent().setClass(MainActivity.this,PvEActivity.class));
                 } else if (y >= dip.px(105) && y < dip.px(147)) {
                     new Data().setPvEGrade(0);
                     startActivity(new Intent().setClass(MainActivity.this, PvEActivity.class));
                 } else if (y >= dip.px(165) && y < dip.px(201)) {
-                    startActivity(new Intent().setClass(MainActivity.this, MyActivity.class));
+
                 } else if (y >= dip.px(221) && y < dip.px(258)) {
                     startActivity(new Intent().setClass(MainActivity.this, PersonalRankingActivity.class));
                 } else if (y >= dip.px(273) && y < dip.px(313)) {
-
+                    startActivity(new Intent().setClass(MainActivity.this, MyActivity.class));
                 }
             }
 

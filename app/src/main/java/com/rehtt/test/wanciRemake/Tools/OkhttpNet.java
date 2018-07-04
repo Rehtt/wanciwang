@@ -1,5 +1,7 @@
 package com.rehtt.test.wanciRemake.Tools;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +9,8 @@ import java.io.InputStream;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -24,7 +28,8 @@ import okhttp3.Response;
 public class OkhttpNet {
     private static OkHttpClient client = null;
 
-    private OkhttpNet() {}
+    private OkhttpNet() {
+    }
 
     public static OkHttpClient getInstance() {
         if (client == null) {
@@ -94,18 +99,34 @@ public class OkhttpNet {
      * 上传文件
      *
      * @param url
-     * @param pathName
-     * @param fileName
      * @param callback
+     * @param map           上传文件，map值：file///文件路径
      */
-    public static void doFile(String url, String pathName, String fileName, Callback callback) {
-        //判断文件类型
-        MediaType MEDIA_TYPE = MediaType.parse(judgeType(pathName));
+    public static void doFile(String url, Map<String, String> map, Callback callback) {
+
         //创建文件参数
         MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(MEDIA_TYPE.type(), fileName,
-                        RequestBody.create(MEDIA_TYPE, new File(pathName)));
+                .setType(MultipartBody.FORM);
+        if (map != null) {
+            for (String key : map.keySet()) {
+
+                Pattern pattern = Pattern.compile("^file///");
+                    Matcher matcher = pattern.matcher(map.get(key));
+                    //判断是否是要上传文件
+                    if (matcher.find()) {
+                        String[] path = map.get(key).split("file///");
+                        String filePath = path[1];
+                        String[] fileName = filePath.split("/");
+                        //判断文件类型
+                        MediaType MEDIA_TYPE = MediaType.parse(judgeType(filePath));
+                        builder.addFormDataPart(key, fileName[fileName.length - 1],
+                                RequestBody.create(MEDIA_TYPE, new File(filePath)));
+                } else {
+                    builder.addFormDataPart(key, map.get(key));
+                }
+            }
+        }
+
         //发出请求参数
         Request request = new Request.Builder()
 //                .header("Authorization", "Client-ID " + "9199fdef135c122")
@@ -132,9 +153,9 @@ public class OkhttpNet {
     }
 
 
-
     /**
      * 下载文件
+     *
      * @param url
      * @param fileDir
      * @param fileName
