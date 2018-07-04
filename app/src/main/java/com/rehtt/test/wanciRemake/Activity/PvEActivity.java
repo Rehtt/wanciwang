@@ -40,6 +40,7 @@ import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
 import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -289,11 +290,8 @@ public class PvEActivity extends AppCompatActivity {
         }
     }
 
-    private void ready() {
-        Bundle bundle = new Bundle();
-        Message message = new Message();
 
-    }
+    long startTime = System.currentTimeMillis();
 
     //游戏过程
     private void game(final List<GetWord> list) {
@@ -301,7 +299,7 @@ public class PvEActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                long time = System.currentTimeMillis();
+
                 List<String> id = new ArrayList<>();
                 List<String> state = new ArrayList<>();
                 int userFraction = 0;
@@ -314,6 +312,7 @@ public class PvEActivity extends AppCompatActivity {
 
                 int g = 0;    //局数
                 int w = 0;
+
                 for (final GetWord getWord : list) {
                     if (w < 5) {
                         int t = 3;
@@ -341,6 +340,7 @@ public class PvEActivity extends AppCompatActivity {
                         msg = new Message();
                         bundle.putString("show", "showEnglish");
                         bundle.putString("English", getWord.getEnglish());
+                        bundle.putString("Chinese", getWord.getChinese());
                         msg.setData(bundle);
                         handler.sendMessage(msg);
                         boolean isTime = false;
@@ -365,7 +365,7 @@ public class PvEActivity extends AppCompatActivity {
                                     userFraction++;
                                     blood = 2;
 
-                                    blood2--;
+                                    --blood2;
                                 }
                                 try {
                                     Thread.sleep(1000);
@@ -386,7 +386,7 @@ public class PvEActivity extends AppCompatActivity {
                                 state.add("0");
                                 blood = 1;
 
-                                blood1--;
+                                --blood1;
                             }
                         }
                         //刷新血条
@@ -435,21 +435,17 @@ public class PvEActivity extends AppCompatActivity {
                     int robotFraction = 15 - userFraction;
                     ifFali = robotFraction > userFraction ? "1" : "0";
                 }
+                bundle = new Bundle();
+                msg = new Message();
+                bundle.putString("show", "end");
+                bundle.putString("whoWin", p1 > p2 ? "玩家" : "电脑");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
 
-                long useTime = System.currentTimeMillis() - time;
-                String upjson = upJson(id, state, useTime, ifFali);
-                Log.e("json", upjson);
-                OkhttpNet.doPost(getString(R.string.url_updateResult), upjson, new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
+                long useTime = System.currentTimeMillis() - startTime;
+                upJson(id, state, useTime, ifFali);
 
-                    }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-
-                    }
-                });
             }
         }).start();
 
@@ -457,35 +453,41 @@ public class PvEActivity extends AppCompatActivity {
     }
 
     /**
+     * 上传结果
+     *
      * @param idd      单词id
      * @param startee  单词状态
      * @param gameTime 游戏时间
      * @param ifFail   人机模式下胜负
      * @return
      */
-    private String upJson(List<String> idd, List<String> startee, long gameTime, String ifFail) {
+    private void upJson(List<String> idd, List<String> startee, long gameTime, String ifFail) {
 
-        String[] id = new String[idd.size()];
-        String[] state = new String[startee.size()];
-        idd.toArray(id);
-        startee.toArray(state);
-        List<UpData.DataBean> beans = new ArrayList<>();
-        for (int i = 0; i < idd.size(); i++) {
-            UpData.DataBean bean = new UpData.DataBean();
-            bean.setId(id[i]);
-            bean.setState(state[i]);
-            beans.add(bean);
+        for (int i=0;i<idd.size();i++){
+            UpData upData=new UpData();
+            upData.setId(idd.get(i));
+            upData.setState(startee.get(i));
+            upDataList.add(upData);
         }
-        UpData upData = new UpData();
-        upData.setData(beans);
-        upData.setGameTime(String.valueOf(gameTime));
-        upData.setIsFail(ifFail);
-        upData.setUser(new Data().getUser());
-
         Gson gson = new Gson();
-        String json = gson.toJson(upData);
+        String json = gson.toJson(upDataList);
+        Map<String, String> map = new HashMap<>();
+        map.put("userName",new Data().getUser());
+        map.put("ifFail",ifFail);
+        map.put("gameTime", String.valueOf(gameTime));
+        map.put("data",json);
 
-        return json;
+        OkhttpNet.doPost(getString(R.string.url_updateResult), map, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("qwe", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+            }
+        });
 
     }
 
@@ -527,6 +529,20 @@ public class PvEActivity extends AppCompatActivity {
         recognizerDialog.show();
         TextView txt = (TextView) recognizerDialog.getWindow().getDecorView().findViewWithTag("textlink");
         txt.setText(word);
+        txt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void useTime() {
+        long time = System.currentTimeMillis();
+        SimpleDateFormat ft =
+                new SimpleDateFormat("mm:ss");
+        String useTime = ft.format(time - startTime);
+        GlobalTime.setText(useTime);
     }
 
     private Handler handler = new Handler() {
@@ -541,13 +557,16 @@ public class PvEActivity extends AppCompatActivity {
                 case "ready":
                     showWord.setText("准备");
                     showTime.setText(msg.getData().getString("ready"));
+                    useTime();
                     break;
                 case "showEnglish":
                     word = msg.getData().getString("English");
-                    showWord.setText(word);
+                    showWord.setText(word + "\n" + msg.getData().getString("Chinese"));
+
                     break;
                 case "Time":
                     showTime.setText(msg.getData().getString("Time"));
+                    useTime();
                     break;
                 case "voiceEnglish":
                     showSper.setText(msg.getData().getString("voiceEnglish"));
@@ -564,7 +583,11 @@ public class PvEActivity extends AppCompatActivity {
                         po2_x.startAnimation(animation(1));
                     }
                     break;
-
+                case "end":
+                    imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
+                    imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
+                    showWord.setText(msg.getData().getString("whoWin") + "胜");
+                    break;
                 default:
                     break;
             }
@@ -614,78 +637,33 @@ public class PvEActivity extends AppCompatActivity {
         }
     }
 
-    static class UpData {
+    private List<UpData> upDataList=new ArrayList<>();
+     class UpData {
 
-        /**
-         * user : ewq
-         * data : [{"id":"2","state":"0"},{"id":"101","state":"1"}]
-         * isFail : 1
-         * gameTime : 2000
-         */
+         /**
+          * id : 2
+          * state : 0
+          */
 
-        private String user;
-        private String ifFail;
-        private String gameTime;
-        private List<UpData.DataBean> data;
+         private String id;
+         private String state;
 
-        public String getUser() {
-            return user;
-        }
+         public String getId() {
+             return id;
+         }
 
-        public void setUser(String user) {
-            this.user = user;
-        }
+         public void setId(String id) {
+             this.id = id;
+         }
 
-        public String getIsFail() {
-            return ifFail;
-        }
+         public String getState() {
+             return state;
+         }
 
-        public void setIsFail(String ifFail) {
-            this.ifFail = ifFail;
-        }
-
-        public String getGameTime() {
-            return gameTime;
-        }
-
-        public void setGameTime(String gameTime) {
-            this.gameTime = gameTime;
-        }
-
-        public List<UpData.DataBean> getData() {
-            return data;
-        }
-
-        public void setData(List<UpData.DataBean> data) {
-            this.data = data;
-        }
-
-        public static class DataBean {
-            /**
-             * id : 2
-             * state : 0
-             */
-
-            private String id;
-            private String state;
-
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
-
-            public String getState() {
-                return state;
-            }
-
-            public void setState(String state) {
-                this.state = state;
-            }
-        }
-    }
+         public void setState(String state) {
+             this.state = state;
+         }
+     }
 
     static class SpeechResult {
 
