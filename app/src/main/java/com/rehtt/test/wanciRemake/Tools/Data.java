@@ -1,15 +1,27 @@
 package com.rehtt.test.wanciRemake.Tools;
 
 public class Data {
-    public static String user;
+    private static String user;
 
     /**
      * PvP模式：0
      * 人机模式：1~3
      */
-    public static int PvEGrade;
+    private static int PvEGrade;
 
-    public static boolean LoadDone;
+
+    private static boolean LoadDone;
+
+    //头像
+    private static String Pic;
+
+    public static String getPic() {
+        return Pic;
+    }
+
+    public static void setPic(String pic) {
+        Pic = pic;
+    }
 
     public static boolean isLoadDone() {
         return LoadDone;

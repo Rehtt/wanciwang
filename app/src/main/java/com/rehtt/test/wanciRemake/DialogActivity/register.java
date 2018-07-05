@@ -62,8 +62,8 @@ public class register extends Dialog {
         if (!userName.equals("") && !passwd.equals("") && !phonee.equals("") && isPhone(phonee)) {
             progressBar.setVisibility(View.VISIBLE);    //显示状态条
             Map<String, String> map = new HashMap<>();
-            map.put("name", userName);
-            map.put("password", passwd);
+            map.put("userName", userName);
+            map.put("passWord", passwd);
             map.put("phone", phonee);
             OkhttpNet.doPost(getContext().getString(R.string.url_register), map, new Callback() {
                 @Override

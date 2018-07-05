@@ -1,41 +1,34 @@
 package com.rehtt.test.wanciRemake;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.rehtt.test.wanciRemake.Activity.MyActivity;
 import com.rehtt.test.wanciRemake.Activity.PersonalRankingActivity;
 import com.rehtt.test.wanciRemake.Activity.PvEActivity;
 import com.rehtt.test.wanciRemake.DialogActivity.LoginDialog;
-import com.rehtt.test.wanciRemake.DialogActivity.PvEDialog;
-import com.rehtt.test.wanciRemake.DialogActivity.register;
 import com.rehtt.test.wanciRemake.Tools.Data;
 import com.rehtt.test.wanciRemake.Tools.Dip;
+import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
 import com.rehtt.test.wanciRemake.Tools.SetFullScreen;
 
-import java.lang.reflect.Method;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -57,11 +50,123 @@ public class MainActivity extends AppCompatActivity {
         initPermission();
         new SetFullScreen(MainActivity.this);
         //显示登陆框
-        LoginDialog loginDialog = new LoginDialog(this);
+        LoginDialog loginDialog = new LoginDialog(this, new LoginDialog.CallBack() {
+            @Override
+            public void callBack() {
+                getInfo();
+            }
+        });
         loginDialog.setCanceledOnTouchOutside(false);
         loginDialog.show();
 
+    }
 
+    //个人信息
+    void getInfo() {
+        final Data data = new Data();
+        Map<String, String> map = new HashMap<>();
+        map.put("userName", data.getUser());
+        OkhttpNet.doPost(getString(R.string.url_getPersonInf), map, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Gson gson = new Gson();
+                try {
+                    Info info = gson.fromJson(response.body().string(), Info.class);
+                    //获取头像
+                    data.setPic(info.getPic());
+                } catch (Exception e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "服务器发生错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    //个人信息json解析
+    class Info {
+
+        /**
+         * pic : http://threr.cn/userPicture/asd.jpg
+         * errCount : 1
+         * allCount : 1
+         * win : 45%
+         * allTime : 11
+         * time : 666
+         * userName : asd
+         */
+
+        private String pic;
+        private String errCount;
+        private String allCount;
+        private String win;
+        private String allTime;
+        private String time;
+        private String userName;
+
+        public String getPic() {
+            return pic;
+        }
+
+        public void setPic(String pic) {
+            this.pic = pic;
+        }
+
+        public String getErrCount() {
+            return errCount;
+        }
+
+        public void setErrCount(String errCount) {
+            this.errCount = errCount;
+        }
+
+        public String getAllCount() {
+            return allCount;
+        }
+
+        public void setAllCount(String allCount) {
+            this.allCount = allCount;
+        }
+
+        public String getWin() {
+            return win;
+        }
+
+        public void setWin(String win) {
+            this.win = win;
+        }
+
+        public String getAllTime() {
+            return allTime;
+        }
+
+        public void setAllTime(String allTime) {
+            this.allTime = allTime;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
     }
 
 
@@ -86,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
             if (x >= dip.px(440) && x < dip.px(555)) {
                 if (y >= dip.px(54) && y < dip.px(86)) {
 //                    new PvEDialog(MainActivity.this).show();
-                    startActivity(new Intent().setClass(MainActivity.this,PvEActivity.class));
+                    new Data().setPvEGrade(1);
+                    startActivity(new Intent().setClass(MainActivity.this, PvEActivity.class));
                 } else if (y >= dip.px(105) && y < dip.px(147)) {
                     new Data().setPvEGrade(0);
                     startActivity(new Intent().setClass(MainActivity.this, PvEActivity.class));

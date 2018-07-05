@@ -23,7 +23,7 @@
 
         <ImageView
             android:id="@+id/infoImage"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="right"
             android:src="@mipmap/ic_launcher"

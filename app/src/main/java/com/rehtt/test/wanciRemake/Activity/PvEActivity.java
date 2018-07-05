@@ -66,6 +66,8 @@ public class PvEActivity extends AppCompatActivity {
     TextView showTime;
     TextView showSper;
     TextView GlobalTime;
+    TextView po1_name;
+    TextView po2_name;
     Button button;
 
     String word = "";
@@ -102,6 +104,12 @@ public class PvEActivity extends AppCompatActivity {
         GlobalTime = (TextView) findViewById(R.id.globalTime);
         showTime.setText("10");
         showSper.setText("");
+        po1_name = (TextView) findViewById(R.id.po1_name);
+        po2_name = (TextView) findViewById(R.id.po2_name);
+        po1_name.setText(new Data().getUser());
+        if (Grade == 1) {
+            po2_name.setText("电脑");
+        }
 
         SpeechUtility.createUtility(this, SpeechConstant.APPID + "=59e45c55");
 
@@ -125,10 +133,18 @@ public class PvEActivity extends AppCompatActivity {
         imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
         imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
 
-        Glide.with(this).load("http://test.rehtt.com/test2.jpg").apply(RequestOptions.bitmapTransform(new CircleCrop()))
+        Glide.with(this).load(new Data().getPic()).apply(RequestOptions.bitmapTransform(new CircleCrop()).placeholder(R.drawable.ic_hourglass_empty_black_24dp))
                 .into(po1);
         Glide.with(this).load("http://test.rehtt.com/test.png").apply(RequestOptions.bitmapTransform(new CircleCrop()))
                 .into(po2);
+
+//        Map<String,String>map=new HashMap<>();
+//        map.put("test","1");
+//        map.put("qwe","0");
+//        map.put("zxc","1");
+//        map.put("fgh","1");
+//        map.put("opii","0");
+//        new WordsDialog(this,map).show();
     }
 
     ImageView imageView;
@@ -234,7 +250,8 @@ public class PvEActivity extends AppCompatActivity {
 
     }
 
-    List<GetWord> words=new ArrayList<>();      //
+    List<GetWord> words = new ArrayList<>();      //
+
     //获取单词
     private void getWord() {
         Map<String, String> map = new HashMap<>();
@@ -260,7 +277,7 @@ public class PvEActivity extends AppCompatActivity {
                             jsons.add(json);
 
                         }
-                        words=jsons;
+                        words = jsons;
                         game(jsons);
                     } catch (Exception e) {
                         Log.e("qwerrt", e.getMessage());
@@ -301,12 +318,13 @@ public class PvEActivity extends AppCompatActivity {
 
     long startTime = System.currentTimeMillis();
     //单词id及状态
-    List<String> id = new ArrayList<>();
-    List<String> state = new ArrayList<>();
+    List<String> id;
+    List<String> state;
 
     //游戏过程
     private void game(final List<GetWord> list) {
-
+        id = new ArrayList<>();
+        state = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -324,97 +342,98 @@ public class PvEActivity extends AppCompatActivity {
                 int w = 0;
 
                 for (int i = 0; i < list.size(); i++) {
-                    if (w < 5) {
-                        int t = 3;
-                        boolean tt = true;
-                        while (tt) {
-                            if (t != 0) {
-                                try {
-                                    bundle = new Bundle();
-                                    msg = new Message();
-                                    bundle.putString("show", "ready");
-                                    bundle.putString("ready", String.valueOf(t));
-                                    msg.setData(bundle);
-                                    handler.sendMessage(msg);
-                                    --t;
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                tt = false;
+                    int t = 3;
+                    boolean tt = true;
+                    while (tt) {
+                        if (t != 0) {
+                            try {
+                                bundle = new Bundle();
+                                msg = new Message();
+                                bundle.putString("show", "ready");
+                                bundle.putString("ready", String.valueOf(t));
+                                msg.setData(bundle);
+                                handler.sendMessage(msg);
+                                --t;
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-
+                        } else {
+                            tt = false;
                         }
-                        bundle = new Bundle();
-                        msg = new Message();
-                        bundle.putString("show", "showEnglish");
-                        bundle.putString("English", list.get(i).getEnglish());
-                        bundle.putString("Chinese", list.get(i).getChinese());
-                        msg.setData(bundle);
-                        handler.sendMessage(msg);
-                        boolean isTime = false;
-                        boolean isTrue = false;
-                        long start = System.currentTimeMillis();
-                        long end = start;
-                        int blood = 0;    //谁扣了血
 
-                        int ti = 10;        //时间
-                        while (!isTime && !isTrue) {
-                            if (end - start < 10000) {
-                                if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(list.get(i).getEnglish())) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(PvEActivity.this, "true", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                                    isTrue = true;
-                                    id.add(String.valueOf(list.get(i).getId()));
-                                    state.add("1");
-                                    userFraction++;
-                                    blood = 2;
+                    }
+                    bundle = new Bundle();
+                    msg = new Message();
+                    bundle.putString("show", "showEnglish");
+                    bundle.putString("English", list.get(i).getEnglish());
+                    bundle.putString("Chinese", list.get(i).getChinese());
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                    boolean isTime = false;
+                    boolean isTrue = false;
+                    long start = System.currentTimeMillis();
+                    long end = start;
+                    int blood = 0;    //谁扣了血
 
-                                    --blood2;
-                                }
-                                try {
-                                    Thread.sleep(1000);
-                                    ti--;
-                                    end = System.currentTimeMillis();
-                                    bundle = new Bundle();
-                                    msg = new Message();
-                                    bundle.putString("show", "Time");
-                                    bundle.putString("Time", String.valueOf(ti));
-                                    msg.setData(bundle);
-                                    handler.sendMessage(msg);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                isTime = true;
+                    int ti = 10;        //时间
+                    while (!isTime && !isTrue) {
+                        if (end - start < 10000) {
+                            if (voiceEnglish != null && voiceEnglish.equalsIgnoreCase(list.get(i).getEnglish())) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(PvEActivity.this, "true", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                isTrue = true;
                                 id.add(String.valueOf(list.get(i).getId()));
-                                state.add("0");
-                                blood = 1;
+                                state.add("1");
+                                userFraction++;
+                                blood = 2;
 
-                                --blood1;
+                                --blood2;
                             }
+                            try {
+                                Thread.sleep(1000);
+                                ti--;
+                                end = System.currentTimeMillis();
+                                bundle = new Bundle();
+                                msg = new Message();
+                                bundle.putString("show", "Time");
+                                bundle.putString("Time", String.valueOf(ti));
+                                msg.setData(bundle);
+                                handler.sendMessage(msg);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            isTime = true;
+                            id.add(String.valueOf(list.get(i).getId()));
+                            state.add("0");
+                            blood = 1;
+
+                            --blood1;
                         }
-                        //刷新血条
-                        final int finalBlood = blood;
-                        bundle = new Bundle();
-                        msg = new Message();
-                        bundle.putString("show", "bloods");
-                        bundle.putInt("fork", finalBlood);
-                        msg.setData(bundle);
-                        handler.sendMessage(msg);
-                        ++w;
-                    } else {
-                        //新的一局
-                        w = 0;
-                        --i;
-                        ++g;
-                        p1 = blood1 > blood2 ? ++p1 : p1;
-                        p2 = blood2 > blood1 ? ++p2 : p2;
+                    }
+                    //刷新血条
+                    final int finalBlood = blood;
+                    bundle = new Bundle();
+                    msg = new Message();
+                    bundle.putString("show", "bloods");
+                    bundle.putInt("fork", finalBlood);
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                    ++w;
+
+                if (blood1 == 0 || blood2 == 0) {
+                    //新的一局
+
+                    p1 = blood1 > blood2 ? ++p1 : p1;
+                    p2 = blood2 > blood1 ? ++p2 : p2;
+                    ++g;
+                    if (g < 2) {
+
                         final String who = blood1 > blood2 ? "玩家" : "电脑";
                         blood1 = 5;
                         blood2 = 5;
@@ -439,8 +458,41 @@ public class PvEActivity extends AppCompatActivity {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    } else {
+                        if (p1 != p2)
+                            break;
+                        else {
+                            p1 = blood1 > blood2 ? ++p1 : p1;
+                            p2 = blood2 > blood1 ? ++p2 : p2;
+                            final String who = blood1 > blood2 ? "玩家" : "电脑";
+                            blood1 = 5;
+                            blood2 = 5;
+                            final int finalG = g;
+                            bundle = new Bundle();
+                            msg = new Message();
+                            bundle.putString("show", "bloods");
+                            bundle.putInt("fork", 0);
+                            bundle.putString("bureau", "bureau");
+                            bundle.putString("bureau_n", String.valueOf(finalG));
+                            bundle.putString("bureau_who", who);
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
 
+                            try {
+                                Thread.sleep(2000);
+                                bundle = new Bundle();
+                                msg = new Message();
+                                bundle.putString("show", "clearAnimation");
+                                msg.setData(bundle);
+                                handler.sendMessage(msg);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
+
+                }
+
                 }
                 isEND = true;
 //                String ifFali = null;
@@ -472,7 +524,7 @@ public class PvEActivity extends AppCompatActivity {
      * @param ifFail   人机模式下胜负
      * @return
      */
-    private void upJson( long gameTime, String ifFail) {
+    private void upJson(long gameTime, String ifFail) {
 
         for (int i = 0; i < id.size(); i++) {
             UpData upData = new UpData();
@@ -574,6 +626,7 @@ public class PvEActivity extends AppCompatActivity {
                 case "showEnglish":
                     word = msg.getData().getString("English");
                     showWord.setText(word + "\n" + msg.getData().getString("Chinese"));
+                    showSper.setText("");
 
                     break;
                 case "Time":
@@ -581,7 +634,7 @@ public class PvEActivity extends AppCompatActivity {
                     useTime();
                     break;
                 case "voiceEnglish":
-                    showSper.setText(msg.getData().getString("voiceEnglish"));
+                    showSper.setText("识别结果：" + msg.getData().getString("voiceEnglish"));
                     break;
                 case "bloods":
                     imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
@@ -599,36 +652,24 @@ public class PvEActivity extends AppCompatActivity {
                     imageView.setImageBitmap(bloodStrip(blood1, p1, 1));
                     imageView2.setImageBitmap(bloodStrip(blood2, p2, 2));
                     showWord.setText(msg.getData().getString("whoWin") + "胜");
-                    AlertDialog alertDialog = new AlertDialog.Builder(PvEActivity.this)
-                            .setTitle("游戏结束")
-                            .setMessage(p1 > p2 ? "玩家" : "电脑" + "胜")
-                            .setNegativeButton("返回主页", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+
+                    Map<String, String> map = new HashMap<>();
+                    for (int i = 0; i < state.size(); i++) {
+                        map.put(words.get(i).getEnglish(), state.get(i));
+                    }
+                    map.put("who_Win", msg.getData().getString("whoWin"));
+                        WordsDialog wordsDialog = new WordsDialog(PvEActivity.this, map, new WordsDialog.CallBack() {
+                            @Override
+                            public void callback(String string) {
+                                if (string.equals("again")) {
+
+                                } else if (string.equals("cancel")) {
                                     PvEActivity.this.finish();
                                 }
-                            })
-                            .setPositiveButton("再来一局", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    bloodStrip(5, 0, 1);
-                                    bloodStrip(5, 0, 2);
-                                    getWord();
-                                }
-                            })
-                            .setNeutralButton("查看对战情况", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Map<String,String>map=new HashMap<>();
-                                    for (int i=0;i<state.size();i++){
-                                        map.put(words.get(i).getEnglish(),state.get(i));
-                                    }
-                                    new WordsDialog(PvEActivity.this,map).show();
-                                }
-                            })
-                            .create();
-                    alertDialog.show();
-
+                            }
+                        });
+                        wordsDialog.setCanceledOnTouchOutside(false);
+                        wordsDialog.show();
 
                     break;
                 case "clearAnimation":

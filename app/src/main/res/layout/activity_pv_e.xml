@@ -10,7 +10,7 @@
         android:id="@+id/portrait1"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,6 +23,24 @@
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/po1_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/portrait1"
+        app:layout_constraintEnd_toEndOf="@+id/portrait1"
+        app:layout_constraintStart_toStartOf="@+id/portrait1" />
+
+    <TextView
+        android:id="@+id/po2_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/portrait2"
+        app:layout_constraintEnd_toEndOf="@+id/portrait2"
+        app:layout_constraintStart_toStartOf="@+id/portrait2" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -53,27 +71,34 @@
     <Button
         android:id="@+id/button7"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Button"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ic_mic_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/voiceEnglish" />
 
     <TextView
         android:id="@+id/word"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="TextView"
+        android:lineSpacingMultiplier="1.5"
         android:textColor="@android:color/black"
         android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/time"
@@ -101,23 +126,23 @@
 
     <ImageView
         android:id="@+id/p1"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         app:layout_constraintBottom_toBottomOf="@+id/portrait1"
         app:layout_constraintEnd_toEndOf="@+id/portrait1"
         app:layout_constraintStart_toStartOf="@+id/portrait1"
         app:layout_constraintTop_toTopOf="@+id/portrait1"
-        app:srcCompat="@drawable/ic_hourglass_empty_black_24dp" />
+        app:srcCompat="@drawable/cha" />
 
     <ImageView
         android:id="@+id/p2"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         app:layout_constraintBottom_toBottomOf="@+id/portrait2"
         app:layout_constraintEnd_toEndOf="@+id/portrait2"
         app:layout_constraintStart_toStartOf="@+id/portrait2"
         app:layout_constraintTop_toTopOf="@+id/portrait2"
-        app:srcCompat="@drawable/ic_hourglass_empty_black_24dp" />
+        app:srcCompat="@drawable/cha" />
 
     <TextView
         android:id="@+id/globalTime"

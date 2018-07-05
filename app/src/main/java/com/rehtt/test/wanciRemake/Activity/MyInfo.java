@@ -25,6 +25,7 @@ import com.rehtt.test.wanciRemake.Tools.Data;
 import com.rehtt.test.wanciRemake.Tools.OkhttpNet;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,8 +119,16 @@ public class MyInfo {
             } else {
                 info.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);
+                String inf=list.get(position);
+                if (str[position].equals("对局最长游戏时间")) {
+                    SimpleDateFormat ft =
+                            new SimpleDateFormat("mm:ss");
+                    inf=ft.format(Long.parseLong(inf));
+                }
+
                 infoName.setText(str[position]);
-                info.setText(list.get(position));
+                info.setText(inf);
+
             }
             return convertView;
         }
